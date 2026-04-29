@@ -1,0 +1,20 @@
+# dbt build artifacts
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Local dbt profile overrides and credentials
+profiles.local.yml
+*.keyfile.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/

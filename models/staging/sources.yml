@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: google_trends
+    description: Raw International Google Trends data loaded into BigQuery.
+    database: "{{ env_var('DBT_SOURCE_PROJECT', target.database) }}"
+    schema: "{{ env_var('DBT_SOURCE_DATASET', 'raw_google_trends') }}"
+    tables:
+      - name: trends
+        description: Raw trend observations from the Google Trends ingestion process.
+        columns:
+          - name: trend_id
+            description: Unique identifier for the trend observation.
+          - name: keyword
+            description: Search keyword or topic.
+          - name: region
+            description: Geographic region for the trend observation.
+          - name: interest_score
+            description: Normalized interest score reported by Google Trends.
+          - name: observed_at
+            description: Timestamp when the trend observation was recorded.
