@@ -1,0 +1,1 @@
+# Add medallion architecture picture in the demo and explain what steps you did where in the pipeline (e.g. cleasning, historization, gold etc.)

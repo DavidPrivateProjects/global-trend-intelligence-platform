@@ -1,0 +1,29 @@
+# Important Links:
+
+# Marketplace International Trends:
+https://console.cloud.google.com/marketplace/product/bigquery-public-datasets/google-trends-intl?project=potent-bulwark-326523
+
+# Queries in the Cloud Console:
+https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=google_trends&page=dataset&project=potent-bulwark-326523&ws=!1m14!1m3!3m2!1sbigquery-public-data!2sgoogle_trends!1m4!4m3!1sbigquery-public-data!2sgoogle_trends!3sinternational_top_terms!1m4!1m3!1spotent-bulwark-326523!2sbquxjob_c0f3a7f_19e279005aa!3sUS
+
+
+
+# Limit bronze layer to maybe a few countries to calculate faster
+
+# bronze
+# implement incremental loading
+# Should you account for late arrivals? -> Would maybe be cool?
+# Should you deduplicate? 
+
+
+# Silver cleansing: 
+# Translate all Languages to English? 
+# Also remove null values 
+# Clean up
+# rename, maybe with cool renaming macro!
+
+# Silver historization: 
+# Apply historization from historization macro! 
+# How could this be done, so the rank of a word could be tracked?
+
+# Gold: Make cool aggregations for final presentation layer...
