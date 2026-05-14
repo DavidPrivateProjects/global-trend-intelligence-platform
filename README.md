@@ -1,6 +1,8 @@
 # global-trend-intelligence-platform
 A production-style data platform on GCP and BigQuery that transforms International Google Trends data into trusted analytics, reporting, and a measurable platform-health workflow with AI-assisted optimization.
 
+## Very important David, add a scetch, like this guy: https://github.com/claudiocmm/data_engineering_projects/tree/main/GCP/pipeline-ecommerce-bq-dbt?source=post_page-----eae10e0c7dc3---------------------------------------
+
 ## dbt project
 
 This repository includes a starter dbt project configured for BigQuery.
