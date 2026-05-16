@@ -19,6 +19,14 @@ clean-targets:
 
 models:
   global_trend_intelligence_platform:
-    +materialized: view
-    example:
-      +materialized: view
+    bronze:
+      materialized: table
+      +tags:
+        - "bronze"
+    silver:
+      +tags:
+        - "silver"
+    gold:
+      materialized: view
+      +tags:
+        - "gold"

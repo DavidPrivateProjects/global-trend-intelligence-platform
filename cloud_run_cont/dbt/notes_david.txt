@@ -17,7 +17,7 @@ https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=google_trends
 
 
 # Silver cleansing: 
-# Translate all Languages to English? 
+# Translate all Languages to English? Use LLM to do so!
 # Also remove null values 
 # Clean up
 # rename, maybe with cool renaming macro!
