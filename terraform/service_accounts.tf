@@ -1,44 +1,32 @@
-# Creates the needed service accounts for dbt/airflow/gcloud
-resource "google_service_account" "dbt_service_account" {
+# Creates service accounts and grants their required project-level IAM roles.
+
+resource "google_service_account" "service_accounts" {
+  for_each = var.service_accounts
+
   project      = var.project_id
-  account_id   = var.dbt_service_account_id
-  display_name = var.dbt_service_account_display_name
-  description  = "Service Account for DBT to interact with Google Cloud resources."
+  account_id   = each.value.account_id
+  display_name = each.value.display_name
+  description  = each.value.description
 }
 
-resource "google_service_account" "airflow_service_account" {
-  project      = var.project_id
-  account_id   = var.airflow_service_account_id
-  display_name = var.airflow_service_account_display_name
-  description  = "Service Account for Airflow to interact with Google Cloud resources."
+locals {
+  service_account_iam_roles = flatten([
+    for service_account_name, service_account in var.service_accounts : [
+      for role in service_account.roles : {
+        key                  = "${service_account_name}-${role}"
+        service_account_name = service_account_name
+        role                 = role
+      }
+    ]
+  ])
 }
 
-resource "google_service_account" "cloud_build_service_account" {
-  project      = var.project_id
-  account_id   = var.cloud_build_service_account_id
-  display_name = var.cloud_build_service_account_display_name
-  description  = "Service Account for cloud_build to interact with Google Cloud resources."
-}
+resource "google_project_iam_member" "service_account_roles" {
+  for_each = {
+    for binding in local.service_account_iam_roles : binding.key => binding
+  }
 
-# Grant necessary IAM roles to the Service Account (Project Level Example)
-# Adjust roles and resource level (project, dataset, bucket) as needed in variables.tf or terraform.tfvars.
-resource "google_project_iam_member" "dbt_iam_bindings" {
-  count   = length(var.dbt_required_roles)
   project = var.project_id
-  role    = var.dbt_required_roles[count.index]
-  member  = "serviceAccount:${google_service_account.dbt_service_account.email}"
-}
-
-resource "google_project_iam_member" "airflow_iam_bindings" {
-  count   = length(var.airflow_required_roles)
-  project = var.project_id
-  role    = var.airflow_required_roles[count.index]
-  member  = "serviceAccount:${google_service_account.airflow_service_account.email}"
-}
-
-resource "google_project_iam_member" "cloud_build_iam_bindings" {
-  count   = length(var.cloud_build_required_roles)
-  project = var.project_id
-  role    = var.cloud_build_required_roles[count.index]
-  member  = "serviceAccount:${google_service_account.cloud_build_service_account.email}"
+  role    = each.value.role
+  member  = "serviceAccount:${google_service_account.service_accounts[each.value.service_account_name].email}"
 }
