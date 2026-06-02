@@ -6,3 +6,6 @@ with source as (
 )
 
 select * from source
+
+
+REMOVE LIMIT IN ALL MODELS AS IT DOES NOT IMPACT COST IN BIG QUERY
