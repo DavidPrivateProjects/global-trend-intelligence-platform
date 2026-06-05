@@ -1,0 +1,10 @@
+services:
+  dbt:
+    build:
+      context: .
+    env_file:
+      - ../.env
+    volumes:
+      - ./dbt:/app/dbt
+      - ~/.config/gcloud:/root/.config/gcloud:ro
+    working_dir: /app/dbt

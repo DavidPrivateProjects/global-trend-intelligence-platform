@@ -2,10 +2,7 @@ with source as (
     select *
     from `bigquery-public-data.google_trends.international_top_rising_terms`
     where refresh_date = "2026-05-13"
-    limit 100
+    limit 100 -- limit does not impact big-query costs!
 )
 
 select * from source
-
-
-REMOVE LIMIT IN ALL MODELS AS IT DOES NOT IMPACT COST IN BIG QUERY
