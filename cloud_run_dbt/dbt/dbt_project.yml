@@ -30,3 +30,8 @@ models:
       +materialized: view
       +tags:
         - "gold"
+
+seeds:
+  global_trend_intelligence_platform:
+    macro_tests:
+      +schema: test_fixtures

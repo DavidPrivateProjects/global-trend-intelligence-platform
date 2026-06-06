@@ -1,0 +1,4 @@
+case_id,raw_value,expected_value
+trim_spaces,"  hello  ",hello
+blank_to_null,"   ",
+null_to_null,,

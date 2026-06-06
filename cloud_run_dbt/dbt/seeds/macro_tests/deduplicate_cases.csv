@@ -1,0 +1,4 @@
+natural_key,priority,record_name
+1,2,duplicate_low_priority
+1,1,duplicate_high_priority
+2,1,unique_record

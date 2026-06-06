@@ -1,0 +1,148 @@
+version: 2
+
+models:
+  - name: silver_international_top_terms
+    description: Cleaned and SCD-historized international top Google Trends terms.
+    tests:
+      - one_current_record_per_natural_key
+      - valid_scd2_date_ranges
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: trend_natural_key
+        tests:
+          - not_null
+      - name: valid_from_refresh_date
+        tests:
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+      - name: week_start_date
+        tests:
+          - not_null
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: search_term
+        tests:
+          - not_null
+      - name: trend_rank
+        tests:
+          - not_null
+
+  - name: silver_international_top_rising_terms
+    description: Cleaned and SCD-historized international rising Google Trends terms.
+    tests:
+      - one_current_record_per_natural_key
+      - valid_scd2_date_ranges
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: trend_natural_key
+        tests:
+          - not_null
+      - name: valid_from_refresh_date
+        tests:
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+      - name: week_start_date
+        tests:
+          - not_null
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: search_term
+        tests:
+          - not_null
+      - name: trend_rank
+        tests:
+          - not_null
+      - name: percent_gain
+        tests:
+          - not_null
+
+  - name: silver_us_top_terms
+    description: Cleaned and SCD-historized US DMA-level top Google Trends terms.
+    tests:
+      - one_current_record_per_natural_key
+      - valid_scd2_date_ranges
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: trend_natural_key
+        tests:
+          - not_null
+      - name: valid_from_refresh_date
+        tests:
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+      - name: week_start_date
+        tests:
+          - not_null
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: us_market_id
+        tests:
+          - not_null
+      - name: us_market_name
+        tests:
+          - not_null
+      - name: search_term
+        tests:
+          - not_null
+      - name: trend_rank
+        tests:
+          - not_null
+
+  - name: silver_us_top_rising_terms
+    description: Cleaned and SCD-historized US DMA-level rising Google Trends terms.
+    tests:
+      - one_current_record_per_natural_key
+      - valid_scd2_date_ranges
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: trend_natural_key
+        tests:
+          - not_null
+      - name: valid_from_refresh_date
+        tests:
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+      - name: week_start_date
+        tests:
+          - not_null
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: us_market_id
+        tests:
+          - not_null
+      - name: us_market_name
+        tests:
+          - not_null
+      - name: search_term
+        tests:
+          - not_null
+      - name: trend_rank
+        tests:
+          - not_null
+      - name: percent_gain
+        tests:
+          - not_null
