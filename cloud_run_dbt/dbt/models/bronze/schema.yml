@@ -1,20 +1,14 @@
 version: 2
 
 models:
-  - name: my_first_dbt_model
-    description: A starter model with a small inline dataset.
-    columns:
-      - name: id
-        description: The primary key for this model.
-        tests:
-          - unique
-          - not_null
+  - name: src_international_top_terms
+    description: Bronze model containing the latest available international Google Trends top terms.
 
-  - name: my_second_dbt_model
-    description: A downstream starter model that filters my_first_dbt_model.
-    columns:
-      - name: id
-        description: The primary key for this model.
-        tests:
-          - unique
-          - not_null
+  - name: src_international_top_rising_terms
+    description: Bronze model containing the latest available international Google Trends rising terms.
+
+  - name: src_top_terms
+    description: Bronze model containing the latest available United States Google Trends top terms.
+
+  - name: src_top_rising_terms
+    description: Bronze model containing the latest available United States Google Trends rising terms.

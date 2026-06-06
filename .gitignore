@@ -1,3 +1,6 @@
+# Local environment variables
+.env
+
 # dbt build artifacts
 target/
 dbt_packages/

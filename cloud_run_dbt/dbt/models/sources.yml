@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: google_trends
+    description: BigQuery public Google Trends tables used as the raw input layer.
+    database: bigquery-public-data
+    schema: google_trends
+    tables:
+      - name: international_top_terms
+        description: Daily international top search terms by country and region.
+
+      - name: international_top_rising_terms
+        description: Daily international rising search terms by country and region.
+
+      - name: top_terms
+        description: Daily top search terms for United States DMA regions.
+
+      - name: top_rising_terms
+        description: Daily rising search terms for United States DMA regions.
