@@ -35,15 +35,15 @@ staged_scd as (
 scd2_records_to_close as (
 
     select
-        current.* replace (
+        existing.* replace (
             date_sub(staged.valid_from_refresh_date, interval 1 day) as valid_to_refresh_date,
             false as is_current,
             current_timestamp() as updated_at
         )
-    from current_records as current
+    from current_records as existing
     inner join staged_scd as staged
-        on staged.trend_natural_key = current.trend_natural_key
-    where staged.scd2_hash != current.scd2_hash
+        on staged.trend_natural_key = existing.trend_natural_key
+    where staged.scd2_hash != existing.scd2_hash
 
 ),
 
@@ -51,10 +51,10 @@ scd2_records_to_insert as (
 
     select staged.*
     from staged_scd as staged
-    left join current_records as current
-        on staged.trend_natural_key = current.trend_natural_key
-    where current.trend_natural_key is null
-       or staged.scd2_hash != current.scd2_hash
+    left join current_records as existing
+        on staged.trend_natural_key = existing.trend_natural_key
+    where existing.trend_natural_key is null
+       or staged.scd2_hash != existing.scd2_hash
 
 ),
 
@@ -62,17 +62,17 @@ scd1_records_to_update as (
 
     select
         staged.* replace (
-            current.trend_history_key as trend_history_key,
-            current.valid_from_refresh_date as valid_from_refresh_date,
-            current.valid_to_refresh_date as valid_to_refresh_date,
-            current.inserted_at as inserted_at,
+            existing.trend_history_key as trend_history_key,
+            existing.valid_from_refresh_date as valid_from_refresh_date,
+            existing.valid_to_refresh_date as valid_to_refresh_date,
+            existing.inserted_at as inserted_at,
             current_timestamp() as updated_at
         )
     from staged_scd as staged
-    inner join current_records as current
-        on staged.trend_natural_key = current.trend_natural_key
-    where staged.scd2_hash = current.scd2_hash
-      and {{ hash_columns(scd1_columns, 'staged') }} != {{ hash_columns(scd1_columns, 'current') }}
+    inner join current_records as existing
+        on staged.trend_natural_key = existing.trend_natural_key
+    where staged.scd2_hash = existing.scd2_hash
+      and {{ hash_columns(scd1_columns, 'staged') }} != {{ hash_columns(scd1_columns, 'existing') }}
 
 )
 
