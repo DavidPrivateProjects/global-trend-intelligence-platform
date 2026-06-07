@@ -8,5 +8,6 @@ global_trend_intelligence_platform:
       dataset: "{{ env_var('DBT_BIGQUERY_DATASET', 'dbt_dev') }}"
       location: "{{ env_var('DBT_BIGQUERY_LOCATION', 'US') }}"
       threads: "{{ env_var('DBT_THREADS', 4) | int }}"
+      maximum_bytes_billed: "{{ env_var('DBT_MAXIMUM_BYTES_BILLED', 20000000000) | int }}"
       job_execution_timeout_seconds: 300
       job_retries: 1
