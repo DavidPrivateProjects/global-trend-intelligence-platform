@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: dim_geo_market
+    description: Dimension table for geographic markets across international regions and US DMA markets.
+    columns:
+      - name: geo_market_key
+        tests:
+          - not_null
+          - unique
+      - name: market_scope
+        tests:
+          - not_null
+      - name: market_display_name
+        tests:
+          - not_null
+
+  - name: dim_search_term
+    description: Dimension table for normalized Google Trends search terms.
+    columns:
+      - name: search_term_key
+        tests:
+          - not_null
+          - unique
+      - name: search_term
+        tests:
+          - not_null
+      - name: search_term_display
+        tests:
+          - not_null
+
+  - name: fact_trend_rank_history
+    description: Unified fact table for top and rising Google Trends rank history across markets.
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: trend_natural_key
+        tests:
+          - not_null
+      - name: search_term_key
+        tests:
+          - not_null
+      - name: geo_market_key
+        tests:
+          - not_null
+      - name: trend_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['top', 'rising']
+      - name: market_scope
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['international', 'us_dma']
+      - name: week_start_date
+        tests:
+          - not_null
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: trend_rank
+        tests:
+          - not_null
+
+  - name: fact_rising_term_momentum
+    description: Fact table focused on rising-term momentum signals.
+    columns:
+      - name: trend_history_key
+        tests:
+          - not_null
+          - unique
+      - name: search_term_key
+        tests:
+          - not_null
+      - name: geo_market_key
+        tests:
+          - not_null
+      - name: percent_gain
+        tests:
+          - not_null
+
+  - name: agg_market_trend_summary
+    description: Aggregated dashboard table summarizing trend activity by market and refresh date.
+    columns:
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: geo_market_key
+        tests:
+          - not_null
+      - name: trend_signal_count
+        tests:
+          - not_null
+      - name: unique_search_terms
+        tests:
+          - not_null
+
+  - name: agg_search_term_performance
+    description: Aggregated dashboard table summarizing search-term performance across markets.
+    columns:
+      - name: refresh_date
+        tests:
+          - not_null
+      - name: search_term_key
+        tests:
+          - not_null
+      - name: search_term
+        tests:
+          - not_null
+      - name: trend_signal_count
+        tests:
+          - not_null
+      - name: markets_seen_count
+        tests:
+          - not_null
