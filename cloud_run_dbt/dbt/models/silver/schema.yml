@@ -6,6 +6,9 @@ models:
     tests:
       - one_current_record_per_natural_key
       - valid_scd2_date_ranges
+      - current_records_have_open_end_date
+      - closed_records_have_end_date
+      - no_overlapping_scd2_ranges
     columns:
       - name: trend_history_key
         tests:
@@ -38,6 +41,9 @@ models:
     tests:
       - one_current_record_per_natural_key
       - valid_scd2_date_ranges
+      - current_records_have_open_end_date
+      - closed_records_have_end_date
+      - no_overlapping_scd2_ranges
     columns:
       - name: trend_history_key
         tests:
@@ -73,6 +79,9 @@ models:
     tests:
       - one_current_record_per_natural_key
       - valid_scd2_date_ranges
+      - current_records_have_open_end_date
+      - closed_records_have_end_date
+      - no_overlapping_scd2_ranges
     columns:
       - name: trend_history_key
         tests:
@@ -111,6 +120,9 @@ models:
     tests:
       - one_current_record_per_natural_key
       - valid_scd2_date_ranges
+      - current_records_have_open_end_date
+      - closed_records_have_end_date
+      - no_overlapping_scd2_ranges
     columns:
       - name: trend_history_key
         tests:
