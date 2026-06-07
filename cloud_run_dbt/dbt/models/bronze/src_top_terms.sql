@@ -1,16 +1,16 @@
-with latest_refresh_date as (
+with source as (
 
-    select max(refresh_date) as refresh_date
+    select
+        safe_cast(score as int64) as score,
+        cast(rank as int64) as rank,
+        cast(refresh_date as date) as refresh_date,
+        cast(dma_name as string) as dma_name,
+        cast(dma_id as int64) as dma_id,
+        cast(term as string) as term,
+        cast(week as date) as week
     from {{ source('google_trends', 'top_terms') }}
-
-),
-
-source as (
-
-    select *
-    from {{ source('google_trends', 'top_terms') }}
-    where refresh_date = (select refresh_date from latest_refresh_date)
-
+    where {{ google_trends_snapshot_filter('top_terms') }}
+    {{ google_trends_dev_filters('top_terms') }}
 )
 
 select * from source
