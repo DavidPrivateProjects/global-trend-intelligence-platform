@@ -32,26 +32,58 @@ The high-level architecture is documented in:
 architecture/diagrams/diagram.md
 ```
 
-The platform follows this flow:
+```mermaid
+flowchart LR
+    %% Main data path
+    subgraph source["Source"]
+        public_bq["BigQuery Public Dataset<br/>google_trends"]
+    end
 
-```text
-BigQuery public Google Trends data
-    -> dbt bronze snapshot models
-    -> dbt silver SCD-historized models
-    -> dbt gold dimensions, facts, and aggregate marts
-    -> BigQuery / Looker Studio dashboard layer
+    subgraph warehouse["BigQuery Warehouse"]
+        bronze["Bronze models<br/>daily source snapshots"]
+        silver["Silver models<br/>cleansed + SCD history"]
+        gold["Gold marts<br/>dimensions, facts, aggregates"]
+    end
 
-Docker + Cloud Build + Artifact Registry
-    -> package and deploy the dbt runtime
+    subgraph serving["Analytics Serving"]
+        dashboards["Looker Studio / BI<br/>dashboard-ready marts"]
+    end
 
-Cloud Run Job
-    -> execute dbt build in GCP
+    public_bq --> bronze --> silver --> gold --> dashboards
 
-Airflow-compatible DAG
-    -> orchestrate Cloud Run Job execution
+    %% Runtime path
+    subgraph runtime["dbt Runtime"]
+        docker["Docker image<br/>dbt-bigquery runtime"]
+        registry["Artifact Registry<br/>dbt-runner image"]
+        run_job["Cloud Run Job<br/>runs dbt build"]
+    end
 
-Terraform
-    -> provision datasets, service accounts, IAM, Artifact Registry, and Cloud Run Job
+    docker --> registry --> run_job
+    run_job -. builds models .-> bronze
+
+    %% Orchestration path
+    subgraph orchestration["Orchestration"]
+        airflow["Airflow DAG<br/>Composer-compatible"]
+        composer["Cloud Composer<br/>optional managed host"]
+    end
+
+    composer -. hosts .-> airflow
+    airflow --> run_job
+
+    %% Deployment and infrastructure path
+    subgraph platform["Platform Provisioning"]
+        terraform["Terraform<br/>APIs, IAM, datasets, runtime"]
+        cloudbuild["Cloud Build<br/>build, push, update"]
+    end
+
+    terraform -. provisions .-> warehouse
+    terraform -. provisions .-> registry
+    terraform -. provisions .-> run_job
+    terraform -. provisions .-> airflow
+
+    cloudbuild --> docker
+    cloudbuild --> registry
+    cloudbuild --> run_job
 ```
 
 ## Data model
