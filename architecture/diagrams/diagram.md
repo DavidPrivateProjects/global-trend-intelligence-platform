@@ -1,61 +1,57 @@
 # Architecture Diagram
 
-The architecture is split into focused diagrams so each view remains readable in GitHub and documentation previews.
-
-## 1. Data and modeling flow
-
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial"}}}%%
 flowchart LR
-    public_bq["BigQuery Public Data<br/>Google Trends"]
-    bronze["Bronze<br/>Daily snapshots"]
-    silver["Silver<br/>Cleaned SCD history"]
-    gold["Gold<br/>Facts + dimensions"]
-    dashboards["Dashboards<br/>Looker Studio / BI"]
+    %% Main data path
+    subgraph source["Source"]
+        public_bq["BigQuery Public Dataset<br/>google_trends"]
+    end
 
-    public_bq --> bronze
-    bronze --> silver
-    silver --> gold
-    gold --> dashboards
-```
+    subgraph warehouse["BigQuery Warehouse"]
+        bronze["Bronze<br/>daily source snapshots"]
+        silver["Silver<br/>cleansed + SCD history"]
+        gold["Gold<br/>dimensions, facts, aggregates"]
+    end
 
-## 2. Runtime and deployment flow
+    subgraph serving["Analytics Serving"]
+        dashboards["Looker Studio / BI<br/>dashboard-ready marts"]
+    end
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial"}}}%%
-flowchart LR
-    code["cloud_run_dbt/<br/>dbt project + Dockerfile"]
-    build["Cloud Build<br/>build image"]
-    registry["Artifact Registry<br/>dbt-runner:latest"]
-    job["Cloud Run Job<br/>dbt build"]
-    bq["BigQuery<br/>bronze / silver / gold"]
+    public_bq --> bronze --> silver --> gold --> dashboards
 
-    code --> build
-    build --> registry
-    registry --> job
-    job --> bq
-```
+    %% Runtime path
+    subgraph runtime["dbt Runtime"]
+        docker["Dockerfile<br/>dbt-bigquery runtime"]
+        registry["Artifact Registry<br/>dbt-runner image"]
+        run_job["Cloud Run Job<br/>runs dbt build"]
+    end
 
-## 3. Orchestration and infrastructure flow
+    docker --> registry --> run_job
+    run_job -. builds models .-> bronze
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "fontFamily": "Arial"}}}%%
-flowchart LR
-    terraform["Terraform<br/>APIs + IAM + runtime"]
-    airflow["Airflow DAG<br/>orchestration"]
-    composer["Cloud Composer<br/>optional host"]
-    job["Cloud Run Job"]
-    logs["Cloud Logging<br/>run observability"]
-    bq["BigQuery<br/>metadata validation"]
+    %% Orchestration path
+    subgraph orchestration["Orchestration"]
+        airflow["Airflow DAG<br/>Composer-compatible"]
+        composer["Cloud Composer<br/>optional managed host"]
+    end
 
-    terraform -. provisions .-> job
-    terraform -. provisions .-> bq
+    composer -. hosts .-> airflow
+    airflow --> run_job
+
+    %% Deployment and infrastructure path
+    subgraph platform["Platform Provisioning"]
+        terraform["Terraform<br/>APIs, IAM, datasets, runtime"]
+        cloudbuild["Cloud Build<br/>build, push, update"]
+    end
+
+    terraform -. provisions .-> warehouse
+    terraform -. provisions .-> registry
+    terraform -. provisions .-> run_job
     terraform -. provisions .-> airflow
 
-    composer -. optional .-> airflow
-    airflow --> job
-    airflow --> bq
-    job --> logs
+    cloudbuild --> docker
+    cloudbuild --> registry
+    cloudbuild --> run_job
 ```
 
 ## Data flow
