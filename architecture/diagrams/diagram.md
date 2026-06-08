@@ -1,60 +1,79 @@
 # Architecture Diagram
 
 ```mermaid
-flowchart TD
-    subgraph Source["BigQuery Public Data"]
-        GT["bigquery-public-data.google_trends"]
+flowchart LR
+    %% Main data path
+    subgraph source["Source"]
+        public_bq["BigQuery Public Dataset<br/>google_trends"]
     end
 
-    subgraph Transform["dbt Transformation Layers"]
-        B["Bronze models<br/>Latest source snapshot"]
-        S["Silver models<br/>Cleansed + SCD-historized"]
-        G["Gold marts<br/>Dimensions, facts, aggregates"]
+    subgraph warehouse["BigQuery Warehouse"]
+        bronze["Bronze<br/>daily source snapshots"]
+        silver["Silver<br/>cleansed + SCD history"]
+        gold["Gold<br/>dimensions, facts, aggregates"]
     end
 
-    subgraph Runtime["Containerized Runtime"]
-        DOCKER["Docker image<br/>dbt-bigquery + project code"]
-        AR["Artifact Registry<br/>dbt-runner image"]
-        CR["Cloud Run Job<br/>executes dbt build"]
+    subgraph serving["Analytics Serving"]
+        dashboards["Looker Studio / BI<br/>dashboard-ready marts"]
     end
 
-    subgraph Deployment["Deployment and Infrastructure"]
-        TF["Terraform<br/>APIs, IAM, datasets, runtime resources"]
-        CB["Cloud Build<br/>build, push, update job"]
+    public_bq --> bronze --> silver --> gold --> dashboards
+
+    %% Runtime path
+    subgraph runtime["dbt Runtime"]
+        docker["Dockerfile<br/>dbt-bigquery runtime"]
+        registry["Artifact Registry<br/>dbt-runner image"]
+        run_job["Cloud Run Job<br/>runs dbt build"]
     end
 
-    subgraph Orchestration["Orchestration"]
-        AF["Airflow-compatible DAG"]
-        COMP["Cloud Composer<br/>optional managed Airflow target"]
+    docker --> registry --> run_job
+    run_job -. builds models .-> bronze
+
+    %% Orchestration path
+    subgraph orchestration["Orchestration"]
+        airflow["Airflow DAG<br/>Composer-compatible"]
+        composer["Cloud Composer<br/>optional managed host"]
     end
 
-    subgraph Analytics["Analytics Outputs"]
-        BQ["BigQuery analytics dataset"]
-        LS["Looker Studio / BI dashboards"]
+    composer -. hosts .-> airflow
+    airflow --> run_job
+
+    %% Deployment and infrastructure path
+    subgraph platform["Platform Provisioning"]
+        terraform["Terraform<br/>APIs, IAM, datasets, runtime"]
+        cloudbuild["Cloud Build<br/>build, push, update"]
     end
 
-    GT --> B
-    B --> S
-    S --> G
-    G --> BQ
-    BQ --> LS
+    terraform -. provisions .-> warehouse
+    terraform -. provisions .-> registry
+    terraform -. provisions .-> run_job
+    terraform -. provisions .-> airflow
 
-    DOCKER --> AR
-    AR --> CR
-    CR --> B
-
-    CB --> DOCKER
-    CB --> AR
-    CB --> CR
-
-    TF --> BQ
-    TF --> AR
-    TF --> CR
-    TF --> AF
-
-    AF --> CR
-    COMP -. optional production host .-> AF
+    cloudbuild --> docker
+    cloudbuild --> registry
+    cloudbuild --> run_job
 ```
+
+## Data flow
+
+1. dbt reads Google Trends public tables from BigQuery.
+2. Bronze models persist one cost-aware source snapshot.
+3. Silver models cleanse, deduplicate, and historize trend records.
+4. Gold marts expose dimensional, fact, and aggregate tables for dashboards.
+
+## Control flow
+
+1. Airflow triggers the Cloud Run Job.
+2. Cloud Run starts the dbt container.
+3. The dbt container runs `dbt build`.
+4. Airflow validates expected BigQuery outputs.
+
+## Deployment flow
+
+1. Terraform provisions GCP APIs, IAM, BigQuery, Artifact Registry, and Cloud Run Job resources.
+2. Cloud Build builds the dbt Docker image.
+3. Cloud Build pushes the image to Artifact Registry.
+4. Cloud Build updates the Cloud Run Job to use the latest image.
 
 ## Layer responsibilities
 
