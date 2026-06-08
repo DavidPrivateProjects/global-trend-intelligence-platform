@@ -32,6 +32,28 @@ The high-level architecture is documented in:
 architecture/diagrams/diagram.md
 ```
 
+The platform follows this flow:
+
+```text
+BigQuery public Google Trends data
+    -> dbt bronze snapshot models
+    -> dbt silver SCD-historized models
+    -> dbt gold dimensions, facts, and aggregate marts
+    -> BigQuery / Looker Studio dashboard layer
+
+Docker + Cloud Build + Artifact Registry
+    -> package and deploy the dbt runtime
+
+Cloud Run Job
+    -> execute dbt build in GCP
+
+Airflow-compatible DAG
+    -> orchestrate Cloud Run Job execution
+
+Terraform
+    -> provision datasets, service accounts, IAM, Artifact Registry, and Cloud Run Job
+```
+
 ```mermaid
 flowchart LR
     %% Main data path
