@@ -319,9 +319,3 @@ Implemented:
 - Dockerized dbt runtime
 - Cloud deployment documentation
 - orchestration documentation
-
-Next focus areas:
-
-- dashboard design and reporting queries
-- Looker Studio screenshots or dashboard documentation
-- README-linked demo walkthrough
